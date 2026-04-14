@@ -4,6 +4,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@as-integrations/express4';
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import typeDefs from './schema.js';
 import resolvers from './resolvers.js';
 
@@ -13,7 +14,10 @@ const port = process.env.PORT || 4000;
 const apolloServer = new ApolloServer({
   typeDefs,
   resolvers,
-  introspection: true
+  introspection: true,
+  plugins: [
+    ApolloServerPluginLandingPageLocalDefault({ embed: true })
+  ]
 });
 
 await apolloServer.start();
