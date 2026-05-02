@@ -34,9 +34,12 @@ rules:
     resources:
       - ingressroutes
       - middlewares
-      - traefikservices
+      - middlewaretcps
+      - ingressroutetcps
+      - ingressrouteudps
       - tlsoptions
       - tlsstores
+      - traefikservices
       - serverstransports
     verbs:
       - get
@@ -55,3 +58,4 @@ subjects:
   - kind: ServiceAccount
     name: traefik-ingress-controller
     namespace: traefik
+    

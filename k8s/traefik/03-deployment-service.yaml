@@ -46,3 +46,4 @@ spec:
     - name: dashboard
       port: 8080
       targetPort: 8080
+      

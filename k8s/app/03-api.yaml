@@ -49,18 +49,6 @@ spec:
                 secretKeyRef:
                   name: videogame-store-secret
                   key: DIRECT_URL
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 4000
-            initialDelaySeconds: 10
-            periodSeconds: 10
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 4000
-            initialDelaySeconds: 20
-            periodSeconds: 20
 ---
 apiVersion: v1
 kind: Service
@@ -73,3 +61,4 @@ spec:
   ports:
     - port: 4000
       targetPort: 4000
+      
