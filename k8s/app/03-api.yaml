@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: videogame-store-api
+  namespace: videogame-store
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: videogame-store-api
+  template:
+    metadata:
+      labels:
+        app: videogame-store-api
+    spec:
+      initContainers:
+        - name: wait-postgres
+          image: postgres:16-alpine
+          command:
+            - sh
+            - -c
+            - until pg_isready -h postgres -p 5432 -U postgres; do echo "Esperando PostgreSQL..."; sleep 2; done
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: videogame-store-secret
+                  key: POSTGRES_PASSWORD
+      containers:
+        - name: api
+          image: graphql-videogame-store:1.0
+          imagePullPolicy: Never
+          command:
+            - sh
+            - -c
+            - npx prisma migrate deploy && npm run seed && npm start
+          ports:
+            - containerPort: 4000
+          env:
+            - name: PORT
+              value: "4000"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: videogame-store-secret
+                  key: DATABASE_URL
+            - name: DIRECT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: videogame-store-secret
+                  key: DIRECT_URL
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 4000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 4000
+            initialDelaySeconds: 20
+            periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: videogame-store-api
+  namespace: videogame-store
+spec:
+  selector:
+    app: videogame-store-api
+  ports:
+    - port: 4000
+      targetPort: 4000

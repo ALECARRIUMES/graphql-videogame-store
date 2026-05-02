@@ -1,0 +1,14 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: videogame-store-api
+  namespace: videogame-store
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`app.ale-carrillo.com`)
+      kind: Rule
+      services:
+        - name: videogame-store-api
+          port: 4000
